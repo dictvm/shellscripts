@@ -22,9 +22,9 @@ if [ "$DAEMON" = "" ] ; then
 fi
 
 # There's a nasty syntax-error somewhere, nothing to see here...
-#if [[ ! "$DAEMON" = "^[a-z]" ]]
-#  usage
-#fi
+if [[ ! "$DAEMON" =~ "^[a-z]" ]]
+  usage
+fi
 
 if [ -d ~/service ] ; then
   echo "~/service directory exists, good..."
@@ -41,8 +41,10 @@ fi
 
 # Behold!
 echo "Deleting $DAEMON service"
-rm -/service/$DAEMON
+cd ~/service/$DAEMON
+rm ~/service/$DAEMON
 svc -dx . log
 rm -rf ~/etc/run-$DAEMON
+cd ~
 
 exit 0
