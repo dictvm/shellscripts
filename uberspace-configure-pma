@@ -1,0 +1,120 @@
+#!/bin/bash
+########################################################################
+# 2012-04-15 Christopher Hirschmann c.hirschmann@jonaspasche.com
+# 2013-05-02 Updated for 4.*, edited to install via source dheitmann@jonaspasche.com
+########################################################################
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+#
+########################################################################
+
+source ./uberspace-configure-common;
+if [ "$SOURCED" != "yes" ]; then
+	echo "ERROR: Could not source ./uberspace-configure-common.";
+	exit 1;
+fi
+
+# It should be sufficient to change the version here, as soon as there's an updated version.
+PMAVERSION='4.0.3'
+
+PHPMYADMINSECRET=`apg -n 1 -M CNL -m 42`;
+
+if [ ! -n "$PHPMYADMINSECRET" ];
+then
+    echo "ERROR: could not generate Blowfish secret for phpMyAdmin.";
+    exit 1;
+fi
+
+echo "Let's check if user 'pma' exists, if not, create it, then continue."
+if [ ! -d /home/pma ] ; then
+  echo "Creating pma uberspace ..."
+  uberspace-account-create.sh -u pma || abort;
+fi
+
+# Check if pma was previously installed via RPM - if so, remove it.
+if rpm -q --quiet phpMyAdmin ; then 
+ rpm -e phpMyAdmin || abort;
+fi
+
+echo "Downloading and exctracting phpMyAdmin-tarball. This shouldn't take long.";
+cd /var/www/virtual/pma/ && curl --silent --location http://sourceforge.net/projects/phpmyadmin/files/phpMyAdmin/$PMAVERSION/phpMyAdmin-$PMAVERSION-all-languages.tar.xz/download  | tar -xzf -
+
+echo "Fixing some potential security risks."
+rm -rf phpMyAdmin-$PMAVERSION-all-languages/setup && chmod -R 700 phpMyAdmin-$PMAVERSION-all-languages/libraries
+
+echo "Creating symlinks."
+rm -rf html && ln -s phpMyAdmin-$PMAVERSION-all-languages html
+
+# Check if its necessary to restart Apache due to DocumentRoot-changes in the VirtualHost-config
+if ! grep -q "^Document Root /usr/share/phpMyAdmin" /etc/httpd/conf.d/virtual.pma.conf ; then
+ echo "Changing DocumentRoot in virtual.pma.conf.";
+ sed -i -e 's/^DocumentRoot .*/DocumentRoot \/var\/www\/virtual\/pma\/html/' /etc/httpd/conf.d/virtual.pma.conf || abort;
+ echo "Triggering Apache restart."
+ touch /root/please_restart_httpd || abort;
+fi
+
+echo "Creating new /var/www/virtual/pma/config.inc.php.";
+{
+cat <<EOF
+<?php
+
+/* Servers configuration */
+\$i = 0;
+
+/* Server: localhost [1] */
+\$i++;
+\$cfg['Servers'][\$i]['verbose'] = '';
+\$cfg['Servers'][\$i]['host'] = 'localhost';
+\$cfg['Servers'][\$i]['port'] = '';
+\$cfg['Servers'][\$i]['socket'] = '';
+\$cfg['Servers'][\$i]['connect_type'] = 'socket';
+\$cfg['Servers'][\$i]['extension'] = 'mysqli';
+\$cfg['Servers'][\$i]['auth_type'] = 'cookie';
+\$cfg['Servers'][\$i]['user'] = '';
+\$cfg['Servers'][\$i]['password'] = '';
+
+/* End of servers configuration */
+
+\$cfg['UploadDir'] = '';
+\$cfg['SaveDir'] = '';
+//\$cfg['ForceSSL'] = true;
+\$cfg['blowfish_secret'] = '${PHPMYADMINSECRET}';
+\$cfg['DefaultLang'] = 'de-utf-8';
+\$cfg['ServerDefault'] = 1;
+\$cfg['AllowThirdPartyFraming'] = false;
+
+## 2011-01-27 c.hirschmann@jonaspasche.com
+## don't bother us with this warning
+\$cfg['PmaNoRelation_DisableWarning'] = true;
+
+## 2012-04-20 jpasche@jonaspasche.com
+\$cfg['AllowUserDropDatabase'] = true;
+
+## The version-check no longer screws up SSL!
+\$cfg['VersionCheck'] = true;
+
+?>
+EOF
+} > /var/www/virtual/pma/config.inc.php || abort;
+
+echo "Setting permissions on /var/www/virtual/pma/config.inc.php to 0640.";
+chmod 0640 /var/www/virtual/pma/config.inc.php || abort;
+echo "Changing group-ownership of /var/www/virtual/pma/config.inc.php to pma.";
+chgrp pma /var/www/virtual/pma/config.inc.php || abort;
+
+echo "########################################################################";
+echo "All done. Rejoice!";
+echo "########################################################################";
