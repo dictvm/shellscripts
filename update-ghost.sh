@@ -22,7 +22,7 @@ done
 cd /home/$USER/
 
 echo "stopping your current ghost-service to perform upgrade..."
-svc -d ~/service/ghostservice/
+svc -d ~/service/ghost/
 
 # let's backup the current ghost-directory
 cp -r ~/ghost ~/ghost-$(date +%T-%F)
@@ -38,6 +38,8 @@ mv ~/ghost-$VERSION/core ~/ghost/core
 rm -rf ~/ghost/content/themes/casper/
 echo "updated default-theme casper. Check your custom theme for compatibility."
 mv ~/ghost-$VERSION/content/themes/casper ~/ghost/content/themes/
+cd ~/ghost-$VERSION/
+cp *.js *.json *.md LICENSE ~/ghost
 
 echo "entering ~/ghost-directory to perform final steps."
 cd ~/ghost/
@@ -52,4 +54,7 @@ fi
 
 echo "starting your ghost-service."
 echo "Check for errors by executing 'tail -F ~/service/ghost/log/main/current'"
-svc -u ~/service/ghostservice/
+svc -u ~/service/ghost/
+
+echo "cleaning up..."
+rm -rf ~/ghost-$VERSION*
