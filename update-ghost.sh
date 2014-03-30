@@ -18,6 +18,9 @@ for DIR in ~/ghost ; do
     fi
 done
 
+# let's make sure we're in the user's home directory
+cd /home/$USER/
+
 echo "stopping your current ghost-service to perform upgrade..."
 svc -d ~/service/ghostservice/
 
@@ -27,8 +30,8 @@ echo "your ghost-directory has been backed up.";
 
 export TMPDIR=`mktemp -d /tmp/XXXXXX`
 
-curl -L https://ghost.org/zip/ghost-$VERSION.zip -o ghost-$VERSION.zip
-unzip ghost-$VERSION.zip -d ghost-$VERSION && cd ghost-$VERSION
+curl -L https://ghost.org/zip/ghost-$VERSION.zip -O
+unzip ghost-$VERSION.zip -d ghost-$VERSION
 
 rm -rf ~/ghost/core
 mv ~/ghost-$VERSION/core ~/ghost/core
@@ -42,7 +45,7 @@ cd ~/ghost/
 # if RHEL is not 6 assume it's 5. Do not use this on RHEL7 beta.
 if [ "$RHEL" == 6  ];
 then
-    npm install --production;
+    npm install --production
 else
     npm install --python="/usr/local/bin/python2.7" --production
 fi
