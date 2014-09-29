@@ -44,6 +44,9 @@ cp *.js *.json *.md LICENSE ~/ghost
 echo "entering ~/ghost-directory to perform final steps."
 cd ~/ghost/
 
+# ghost 0.5.2 needs a new directory in ~/ghost/content
+mkdir content/apps
+
 # if RHEL is not 6 assume it's 5. Do not use this on RHEL7 beta.
 if [ "$RHEL" == 6  ];
 then
