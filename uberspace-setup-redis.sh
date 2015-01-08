@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# we've moved on to ansible. there will be no more updates to this script.
 MYUID=`id -u`
 
 if [ "$MYUID" = "0" ] ; then
