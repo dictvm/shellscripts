@@ -4,7 +4,7 @@
 # the documentation of the Uberspace-wiki: http://goo.gl/eW5TlR
 
 # set the current ghost-version here
-VERSION='0.5.10'
+VERSION='0.6.0'
 
 # let's save the current CentOS-version
 RHEL='cat /etc/redhat-release | cut -d" " -f3 | cut -d "." -f1"'
