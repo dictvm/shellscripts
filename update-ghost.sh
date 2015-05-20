@@ -38,7 +38,7 @@ unzip ghost-$VERSION.zip -d ghost-$VERSION
 
 rm -rf $GHOSTDIR/core
 mv ~/ghost-$VERSION/core $GHOSTDIR/core
-rm -rf $GHOSTDIR/host/content/themes/casper/
+rm -rf $GHOSTDIR/content/themes/casper/
 echo "updated default-theme casper. Check your custom theme for compatibility."
 mv ~/ghost-$VERSION/content/themes/casper $GHOSTDIR/content/themes/
 cd ~/ghost-$VERSION/
@@ -46,9 +46,6 @@ cp *.js *.json *.md LICENSE $GHOSTDIR
 
 echo "entering ~/ghost-directory to perform final steps."
 cd $GHOSTDIR
-
-# ghost 0.5.2 needs a new directory in ~/ghost/content
-mkdir content/apps
 
 # if RHEL is not 6 assume it's 5. Do not use this on RHEL7 beta.
 if [ "$RHEL" == 6  ];
