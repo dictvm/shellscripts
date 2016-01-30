@@ -4,7 +4,7 @@
 # the documentation of the Uberspace-wiki: http://goo.gl/eW5TlR
 
 # set the current ghost-version here
-VERSION='0.7.1'
+VERSION='0.7.5'
 
 # set the ghost installation directory
 GHOSTDIR=~/ghost
