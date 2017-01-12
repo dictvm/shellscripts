@@ -33,7 +33,7 @@ echo "your ghost-directory has been backed up.";
 
 export TMPDIR=`mktemp -d /tmp/XXXXXX`
 
-curl -L https://ghost.org/zip/ghost-$VERSION.zip -O
+curl -L https://github.com/TryGhost/Ghost/releases/download/$VERSION/Ghost-$VERSION.zip -o ghost-$VERSION.zip
 unzip ghost-$VERSION.zip -d ghost-$VERSION
 
 rm -rf $GHOSTDIR/core
