@@ -4,7 +4,7 @@
 # the documentation of the Uberspace-wiki: http://goo.gl/eW5TlR
 
 # set the current ghost-version here
-VERSION='0.11.3'
+VERSION='0.11.4'
 
 # set the ghost installation directory
 GHOSTDIR=~/ghost
@@ -33,8 +33,8 @@ echo "your ghost-directory has been backed up.";
 
 export TMPDIR=`mktemp -d /tmp/XXXXXX`
 
-curl -L https://ghost.org/zip/ghost-$VERSION.zip -O
-unzip ghost-$VERSION.zip -d ghost-$VERSION
+curl -L https://github.com/TryGhost/Ghost/releases/download/$VERSION/Ghost-$VERSION.zip -O
+unzip Ghost-$VERSION.zip -d ghost-$VERSION
 
 rm -rf $GHOSTDIR/core
 mv ~/ghost-$VERSION/core $GHOSTDIR/core
