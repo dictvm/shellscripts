@@ -4,7 +4,7 @@
 # the documentation of the Uberspace-wiki: http://goo.gl/eW5TlR
 
 # set the current ghost-version here
-VERSION='0.11.3'
+VERSION='latest' # instead of constantly changing this code...
 
 # set the ghost installation directory
 GHOSTDIR=~/ghost
@@ -13,7 +13,8 @@ GHOSTDIR=~/ghost
 RHEL='cat /etc/redhat-release | cut -d" " -f3 | cut -d "." -f1"'
 
 for DIR in $GHOSTDIR ; do
-    if [ -d DIR ] ; then
+    if [ ! -d $DIR ] ; then
+        # I wonder if anybody has ever seen this message? 
         echo "you do not seem to have ghost-directory in your ~/."
         echo "please make sure you have followed the documentation."
         echo "if you are unsure, check the wiki: http://goo.gl/eW5TlR"
